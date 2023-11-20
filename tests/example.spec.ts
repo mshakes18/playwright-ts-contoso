@@ -25,42 +25,58 @@ test("go to controllers page and check controller exists", async ({ page }) => {
   // Check price text appears
 
   await expect(
-    page
-      .getByTitle("Xbox Wireless Controller Aqua Shift Special Edition")
-      .locator(".MuiCardContent-root.css-1qw96cp .productOrgPrice"),
+    page.getByRole("heading", { name: "$254.00" }).nth(1),
   ).toHaveText("$254.00");
-  // const productPrice = page.locator(
-  //   "MuiPaper-root.MuiPaper-elevation.MuiPaper-rounded.MuiPaper-elevation1.MuiCard-root.productCard.css-s18byi",
-  // );
-  // await expect(productPrice).toHaveText("$254.00");
+
+  page
+    .getByTitle("Xbox Wireless Controller Aqua Shift Special Edition")
+    .click();
+  await page.waitForURL(
+    "https://cloudtesting.contosotraders.com/product/detail/30",
+  );
 
   // checking add to basket button is visible
 
-  // const addToBasketBtn = page.getByRole("button", { name: "add to bag" });
-  // await expect(addToBasketBtn).toBeVisible();
+  const addToBasketBtn = page.getByRole("button", { name: "add to bag" });
+  await expect(addToBasketBtn).toBeVisible();
 
-  // clicking the description tab
-
-  const description = page.locator(
-    "MuiTypography-root.MuiTypography-body1.css-9l3uo3",
-  );
-  await description.click();
-
-  const descriptionTxt = page.locator(
-    "MuiCollapse-root.MuiCollapse-vertical.MuiCollapse-entered css-c4sutr",
+  const controllerTitle = page.locator(".productdetailName");
+  await expect(controllerTitle).toHaveText(
+    "Xbox Wireless Controller Aqua Shift Special Edition",
   );
 
-  await expect(descriptionTxt).toHaveText("Model Number: Xbox Series X");
+  const controllerPrice = page.locator(".newprice");
+  await expect(controllerPrice).toHaveText("$254.00");
+  page.getByRole("button", { name: "Description" }).click();
+  const descriptionBox = page.getByText("Model Number: Xbox Series X");
+  await expect(descriptionBox).toBeVisible();
+
+  page.getByRole("button", { name: "+" }).click();
+  const quantity = page.locator(".quantity-display");
+  await expect(quantity).toHaveValue("2");
+
+  page.locator(".CartButton").click();
+
+  const checkOutPopUp = page.locator(".MuiAlert-message");
+  await expect(checkOutPopUp).toHaveText(
+    "Added Xbox Wireless Controller Aqua Shift Special Edition to Cart",
+  );
+  await page.waitForTimeout(2000);
+  await expect(checkOutPopUp).toBeHidden();
+
+  const cartIcon = page.getByLabel("cart");
+  await expect(cartIcon).toHaveText("1");
+  await cartIcon.click();
+  await expect(page).toHaveURL("https://cloudtesting.contosotraders.com/cart");
+  const checkOutText = page.getByText(
+    "Xbox Wireless Controller Aqua Shift Special Edition",
+  );
+  await expect(checkOutText).toBeVisible();
+
+  const discountText = page.getByTestId("discount");
+  await expect(discountText).toBeVisible();
+
+  const discountBtn = page.locator(".MuiChip-deletableColorDefault");
+  await expect(discountBtn).toBeVisible();
+  await discountBtn.click();
 });
-
-// test("get started link", async ({ page }) => {
-//   await page.goto("https://playwright.dev/");
-
-//   // Click the get started link.
-//   await page.getByRole("link", { name: "Get started" }).click();
-
-//   // Expects page to have a heading with the name of Installation.
-//   await expect(
-//     page.getByRole("heading", { name: "Installation" }),
-//   ).toBeVisible();
-// });
