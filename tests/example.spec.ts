@@ -76,7 +76,13 @@ test("go to controllers page and check controller exists", async ({ page }) => {
   const discountText = page.getByTestId("discount");
   await expect(discountText).toBeVisible();
 
-  const discountBtn = page.locator(".MuiChip-deletableColorDefault");
+  const discountBtn = page.getByTestId("CancelIcon");
   await expect(discountBtn).toBeVisible();
   await discountBtn.click();
+
+  const cartDiscountTxt = page.getByTestId("discount");
+  await expect(cartDiscountTxt).toHaveText("-$0.00");
+
+  const newPrc = page.locator(".OrderTotalPrice");
+  await expect(newPrc).toHaveText("$608.00");
 });
